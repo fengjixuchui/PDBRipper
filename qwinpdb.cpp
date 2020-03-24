@@ -193,7 +193,7 @@ QWinPDB::VALUE QWinPDB::getValue(IDiaSymbol *pSymbol)
             case VT_I1:         vResult.vValue=value.cVal;               break;
             case VT_I2:         vResult.vValue=value.iVal;               break;
             case VT_I4:         vResult.vValue=value.lVal;               break;
-            default:            qDebug("Unknown VARIANT");
+            default:            emit infoMessage(tr("Unknown VARIANT"));
         }
     }
 //    else
@@ -218,7 +218,7 @@ qint64 QWinPDB::variantToQint64(VARIANT value)
         case VT_I1:         result=value.cVal;              break;
         case VT_I2:         result=value.iVal;              break;
         case VT_I4:         result=value.lVal;              break;
-        default:            qDebug("Unknown VARIANT");
+        default:            emit infoMessage(tr("Unknown VARIANT"));
     }
 
     return result;
@@ -1142,12 +1142,12 @@ QWinPDB::RTYPE QWinPDB::_getType(IDiaSymbol *pType,QWinPDB::HANDLE_OPTIONS *pHan
         }
         else
         {
-             qDebug("Unknown TYPE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+             emit infoMessage(tr("Unknown TYPE"));
         }
     }
     else
     {
-        qDebug("Error!!!");
+        emit infoMessage(tr("pType error"));
     }
 
     return result;
@@ -1166,7 +1166,7 @@ QString QWinPDB::getSymbolTypeString(IDiaSymbol *pSymbol)
     }
     else
     {
-        qDebug("No type"); // TODO Check
+        emit infoMessage(tr("No type")); // TODO Check
     }
 
     pType->Release();
@@ -1482,9 +1482,7 @@ QWinPDB::PDB_INFO QWinPDB::getAllTags(QWinPDB::HANDLE_OPTIONS *pHandleOptions)
                         }
                         else
                         {
-                            qDebug(rgTags[dwSymTag]);
-                            int z=0;
-                            z++;
+                            emit infoMessage(QString(rgTags[dwSymTag]));
                         }
 //                        qDebug(rgTags[dwSymTag]);
                         mapTypes.insert(rgTags[dwSymTag],mapTypes.value(rgTags[dwSymTag],0)+1);
@@ -1506,55 +1504,6 @@ QWinPDB::PDB_INFO QWinPDB::getAllTags(QWinPDB::HANDLE_OPTIONS *pHandleOptions)
     }
 
     return result;
-}
-
-QList<QWinPDB::SYMBOL_RECORD> QWinPDB::getUDTList(DWORD dwKind)
-{
-    QList<SYMBOL_RECORD> listResult;
-
-    IDiaEnumSymbols *pEnumSymbols;
-    LONG nCount;
-    if(pGlobal->findChildren(SymTagUDT, nullptr, nsNone, &pEnumSymbols)==S_OK)
-    {
-        if(pEnumSymbols->get_Count(&nCount)==S_OK)
-        {
-            if(nCount)
-            {
-                IDiaSymbol *pSymbol;
-                ULONG celt = 0;
-                ULONG iMod = 1;
-
-                QMap<QString,int> mapTypes;
-
-                while(SUCCEEDED(pEnumSymbols->Next(1, &pSymbol, &celt)) && (celt == 1))
-                {
-                    DWORD _dwKind=0;
-                    pSymbol->get_udtKind(&_dwKind);
-
-                    if(dwKind==_dwKind)
-                    {
-                        BSTR bstring;
-                        SYMBOL_RECORD record={};
-
-                        pSymbol->get_symIndexId(&record.dwID);
-                        if(pSymbol->get_name(&bstring)==S_OK) {record.sName=QString::fromWCharArray(bstring);        SysFreeString(bstring);}
-
-                        listResult.append(record);
-                    }
-
-                    pSymbol->Release();
-                }
-            }
-        }
-
-        pEnumSymbols->Release();
-    }
-
-    return listResult;
-}
-QList<QWinPDB::SYMBOL_RECORD> QWinPDB::getClasses()
-{
-    return getUDTList(1);
 }
 
 QWinPDB::STATS QWinPDB::getStats()
@@ -1851,7 +1800,6 @@ QWinPDB::ELEM QWinPDB::_getElem(IDiaSymbol *pParent, HANDLE_OPTIONS *pHandleOpti
 
                                 if(bAddAlignment)
                                 {
-                                    qDebug("Alignment");
                                     ELEM alignElem={};
 
                                     alignElem.elemType=ELEM_TYPE_FAKEDATA;
@@ -2179,16 +2127,16 @@ QWinPDB::ELEM_INFO QWinPDB::getElemInfo(const ELEM *pElem, HANDLE_OPTIONS *pHand
     else if(pElem->elemType==ELEM_TYPE_TYPEDEF)
     {
         // TODO Check typedef
-        qDebug("TYPEDEF");
+        emit infoMessage(tr("TYPEDEF"));
     }
     else if(pElem->elemType==ELEM_TYPE_VTABLE)
     {
         // TODO Check typedef
-        qDebug("VTABLE");
+        emit infoMessage(tr("VTABLE"));
     }
     else
     {
-        qDebug("Unknown ELEM_TYPE");
+        emit infoMessage(tr("Unknown ELEM_TYPE"));
     }
 
     if(nLevel==0)

@@ -527,16 +527,11 @@ public:
         QString sResultFileName;
     };
 
-    explicit QWinPDB(QObject *parent = 0);
-
-    static HANDLE_OPTIONS getDefaultHandleOptions();
-
-    bool loadFromFile(QString sFileName);
-
+    explicit QWinPDB(QObject *parent=nullptr);
     ~QWinPDB();
-
+    static HANDLE_OPTIONS getDefaultHandleOptions();
+    bool loadFromFile(QString sFileName);
     PDB_INFO getAllTags(HANDLE_OPTIONS *pHandleOptions);
-
     STATS getStats();
     void stop();
     void setProcessEnable(bool bState);
@@ -603,28 +598,19 @@ public:
 
     ELEM getElem(quint32 nID, HANDLE_OPTIONS *pHandleOptions);
     ELEM _getElem(IDiaSymbol *pParent, QWinPDB::HANDLE_OPTIONS *pHandleOptions);
-
     void fixOffsets(QWinPDB::ELEM *pElem);
     void _appendElem(QWinPDB::ELEM *pElem,QList<ELEM> *pListChildren,int nStartPosition,int nEndPosition);
-
     ELEM_INFO getElemInfo(const ELEM *pElem, HANDLE_OPTIONS *pHandleOptions, int nLevel, bool bIsClass);
-
     ELEM_INFO handleElement(quint32 nID,HANDLE_OPTIONS *pHandleOptions);
-
     QString exportString(QWinPDB::STATS *pStats,HANDLE_OPTIONS *pHandleOptions);
-
     ELEM_BASEINFO getBaseInfo(IDiaSymbol *pParent);
 
 private:
     void cleanup();
-
     QString generateGUID();
-
     VALUE getValue(IDiaSymbol *pSymbol);
     qint64 variantToQint64(VARIANT value);
-
     QString indent(int nLevel);
-
     RECORD_UDT _getRecordUDT(IDiaSymbol *pSymbol);
     RECORD_FUNCTION _getRecordFunction(IDiaSymbol *pSymbol, HANDLE_OPTIONS *pHandleOptions);
     RECORD_DATA _getRecordData(IDiaSymbol *pSymbol, HANDLE_OPTIONS *pHandleOptions);
@@ -644,20 +630,15 @@ private:
     RECORD_CALLSITE _getRecordCallSite(IDiaSymbol *pSymbol, HANDLE_OPTIONS *pHandleOptions);
     RECORD_LABEL _getRecordLabel(IDiaSymbol *pSymbol);
     RECORD_BLOCK _getRecordBlock(IDiaSymbol *pSymbol);
-
     void _checkSymbol(IDiaSymbol *pSymbol);
-
     RTYPE getSymbolType(IDiaSymbol *pSymbol, HANDLE_OPTIONS *pHandleOptions);
     RTYPE _getType(IDiaSymbol *pType, HANDLE_OPTIONS *pHandleOptions);
-
     QString getSymbolTypeString(IDiaSymbol *pSymbol);
     QString _getTypeString(IDiaSymbol *pType);
-
     DWORD _getSymTag(IDiaSymbol *pSymbol);
     bool getSymbolByID(DWORD dwID,IDiaSymbol **ppSymbol);
     static QString rtypeToString(RTYPE rtype, bool bIsClass);
     static QString getAccessString(int nAccess);
-
     static QString _getTab(int nLevel);
 
 signals:

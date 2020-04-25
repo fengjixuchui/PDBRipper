@@ -196,10 +196,6 @@ QWinPDB::VALUE QWinPDB::getValue(IDiaSymbol *pSymbol)
             default:            emit infoMessage(tr("Unknown VARIANT"));
         }
     }
-//    else
-//    {
-//        qDebug("QWinPDB::getValue error"); // TODO remove
-//    }
 
     return vResult;
 }
@@ -1525,6 +1521,7 @@ QWinPDB::STATS QWinPDB::getStats()
         {
             if(nCount)
             {
+                emit setProgressMinimum(0);
                 emit setProgressMaximum(nCount);
 
                 IDiaSymbol *pSymbol;
@@ -2173,6 +2170,7 @@ QString QWinPDB::exportString(QWinPDB::STATS *pStats, QWinPDB::HANDLE_OPTIONS *p
 
     int nCount=pStats->listSymbols.count();
 
+    emit setProgressMinimum(0);
     emit setProgressMaximum(nCount);
 
     int nCurrentIndex=0;
